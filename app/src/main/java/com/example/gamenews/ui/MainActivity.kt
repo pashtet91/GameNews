@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModels()
         updateControls()
+        topNewsButtonConnectListener()
         hideTopNewsButton()
         performSearch()
     }
@@ -99,7 +100,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideTopNewsButton(){
-        topNewsButtonConnectListener()
         binding.topNewsButton.visibility = View.INVISIBLE
     }
 
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                 if(titleIsEmpty)
                     results = mainViewModel.searchNews()
                 else
-                    results = mainViewModel.searchNews(title)
+                    results = mainViewModel.searchNewsByTitle(title)//searchNews(title)
             else
                 results = mainViewModel.searchTopNewsOnly()
 
@@ -152,8 +152,11 @@ class MainActivity : AppCompatActivity() {
                 hideProgressBar()
                 binding.toolbar.title = if (titleIsEmpty) getString(R.string.toolbar_title) else title
                 newsListAdapter.setSearchData(results)
+
                 if(!results.isEmpty())
                     showTopNewsButton()
+                else
+                    hideTopNewsButton()
             }
 
             Log.i(TAG, "Results = $results")

@@ -11,10 +11,13 @@ class MainViewModel(application: Application) :
         var newsRepo: NewsRepo? = null
 
 
-    suspend fun searchNews(title:String = ""):
+    suspend fun searchNews()://title:String = ""):
         List<NewsSummaryViewData>{
 
-        val results =  if (title.isEmpty())  newsRepo?.getAllNews() else  newsRepo?.searchByTitle(title)
+        val results =  //if (title.isEmpty())
+                            newsRepo?.getAllNews()
+                        //else
+                           // newsRepo?.searchByTitle(title)
 
         if(results != null && results.isSuccessful){
             val news = results.body()
@@ -25,6 +28,20 @@ class MainViewModel(application: Application) :
             }
         }
         return emptyList()
+    }
+
+    suspend fun searchNewsByTitle(title:String): List<NewsSummaryViewData> {
+
+        val results = newsRepo?.getAllNews()
+
+        val filteredResults = ArrayList<News>()
+        results?.body()?.iterator()?.forEach { i ->
+            if (i.title.contains(title))
+                filteredResults.add(i)
+        }
+        return if (filteredResults.isNotEmpty())
+            filteredResults.map { n -> newsToNewsSummaryView(n) }
+        else emptyList()
     }
 
     suspend fun searchTopNewsOnly(): List<NewsSummaryViewData>{
