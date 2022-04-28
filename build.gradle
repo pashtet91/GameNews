@@ -4,7 +4,6 @@ buildscript {
     ext{
         coroutines_version = '1.6.0'
         retrofit_version = '2.9.0'
-        room_version = '2.4.2'
     }
 
     repositories {
