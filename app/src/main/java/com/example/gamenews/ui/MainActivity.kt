@@ -26,12 +26,14 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
+    private val TAG = javaClass.simpleName
+    private var topNewsAreShowing: Boolean = false
+
     private lateinit var newsListAdapter: NewsListAdapter
 
     lateinit var binding:ActivityMainBinding
-    lateinit var results: List<MainViewModel.NewsSummaryViewData>//Response<List<News>>
+    lateinit var results: List<MainViewModel.NewsSummaryViewData>
 
-    val TAG = javaClass.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         setupToolbar()
 
-        performSearch()
         setupViewModels()
         updateControls()
+        hideTopNewsButton()
+        performSearch()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -62,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupToolbar(){
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = "News";
+        supportActionBar?.title = getString(R.string.toolbar_title);
     }
 
     private fun setupViewModels(){
@@ -95,6 +98,26 @@ class MainActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.INVISIBLE
     }
 
+    private fun hideTopNewsButton(){
+        topNewsButtonConnectListener()
+        binding.topNewsButton.visibility = View.INVISIBLE
+    }
+
+    private fun showTopNewsButton(){
+        binding.topNewsButton.visibility = View.VISIBLE
+    }
+
+    private fun topNewsButtonConnectListener()
+    {
+        binding.topNewsButton.setOnClickListener {
+            if (!topNewsAreShowing)
+                performSearch("", true)
+            else
+                performSearch()
+
+            topNewsAreShowing = !topNewsAreShowing
+        }
+    }
     override fun onNewIntent(intent: Intent){
         super.onNewIntent(intent)
         setIntent(intent)
@@ -109,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun performSearch(title:String = ""){
+    private fun performSearch(title:String = "", findTopNewsOnly:Boolean = false){
         showProgressBar()
 
         val newsService = NewsService.instance
@@ -117,16 +140,20 @@ class MainActivity : AppCompatActivity() {
         val titleIsEmpty = title.isEmpty()
 
         GlobalScope.launch {
-            if(titleIsEmpty)
-                //results = newsRepo.getAllNews()
-                results = mainViewModel.searchNews()
+            if(!findTopNewsOnly)
+                if(titleIsEmpty)
+                    results = mainViewModel.searchNews()
+                else
+                    results = mainViewModel.searchNews(title)
             else
-                results = mainViewModel.searchNews(title)
+                results = mainViewModel.searchTopNewsOnly()
 
             withContext(Dispatchers.Main){
                 hideProgressBar()
                 binding.toolbar.title = if (titleIsEmpty) getString(R.string.toolbar_title) else title
                 newsListAdapter.setSearchData(results)
+                if(!results.isEmpty())
+                    showTopNewsButton()
             }
 
             Log.i(TAG, "Results = $results")

@@ -16,16 +16,15 @@ class MainViewModel(application: Application) :
 
         val results =  if (title.isEmpty())  newsRepo?.getAllNews() else  newsRepo?.searchByTitle(title)
 
-//        if(results != null && results.isSuccessful){
-//            val news = results.body()
-//            if(!news.isNullOrEmpty()){
-//                return news.map{n->
-//                    newsToNewsSummaryView(n)
-//                }
-//            }
-//        }
-//        return emptyList()
-        return handleResults(results)
+        if(results != null && results.isSuccessful){
+            val news = results.body()
+            if(!news.isNullOrEmpty()){
+                return news.map{n->
+                    newsToNewsSummaryView(n)
+                }
+            }
+        }
+        return emptyList()
     }
 
     suspend fun searchTopNewsOnly(): List<NewsSummaryViewData>{
@@ -38,20 +37,11 @@ class MainViewModel(application: Application) :
                 filteredResults.add(i)
         }
 
-        return handleResults(results)
+        return  if(filteredResults.isNotEmpty())
+                        filteredResults.map{n->newsToNewsSummaryView(n)}
+                else emptyList()
     }
 
-    suspend fun handleResults(results: Response<List<News>>?): List<NewsSummaryViewData>{
-        if(results != null && results.isSuccessful){
-            val news = results.body()
-            if(!news.isNullOrEmpty()){
-                return news.map{n->
-                    newsToNewsSummaryView(n)
-                }
-            }
-        }
-        return emptyList()
-    }
 
     private fun newsToNewsSummaryView(
         news: News

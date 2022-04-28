@@ -14,7 +14,7 @@ interface NewsService {
 
     @GET("/?search")
     suspend fun getNewsByTitle(@Query("title") term: String) :
-            Response<List<News>>//NewsResponse>>
+            Response<List<News>>
 
     companion object {
         val instance: NewsService by lazy{

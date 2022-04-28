@@ -19,7 +19,6 @@
         android:layout_marginStart="5dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="Image" />
@@ -31,9 +30,10 @@
         android:layout_gravity="top"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:textSize="18sp"
         android:textStyle="bold"
 
-        app:layout_constraintTop_toTopOf="@id/newsImage"
+        app:layout_constraintTop_toBottomOf="@id/newsImage"
         tools:text="Title" />
 
     <TextView
@@ -45,6 +45,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
         android:textSize="11sp"
+        android:textColor="@android:color/holo_blue_light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newsTitleTextView"
         app:layout_constraintEnd_toStartOf="@id/timeTextView"
